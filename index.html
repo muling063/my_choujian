@@ -103,7 +103,7 @@
           document.getElementById('wheel').style.transform = `rotate(${angle}deg)`;
           setTimeout(() => {
               const selectedIndex = Math.floor((angle % 360) / (360 / prizes.length));
-              alert('你抽中的奖品是: ' + prizes[selectedIndex]);
+              alert('去吃: ' + prizes[selectedIndex]，+'吧');
               isSpinning = false;
           }, 4000);
       }
