@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自定义奖项抽奖转盘</title>
+  <style>
+      body {
+          font-family: Arial, sans-serif;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 100vh;
+          background-image: url('https://preview.qiantucdn.com/58pic/34/97/66/69958PIC84qbTai9Rqu9b_PIC2018.jpg!qt_w320_webp');
+      }
+      #wheel {
+          width: 300px;
+          height: 300px;
+          border-radius: 50%;
+          border: 5px solid #99a4bd;
+          position: relative;
+          overflow: hidden;
+          transition: transform 4s cubic-bezier(0.33, 1, 0.68, 1);
+      }
+      .slice {
+          position: absolute;
+          width: 50%;
+          height: 50%;
+          background-color: #ffcc00;
+          border: 1px solid #fff;
+          transform-origin: 100% 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          font-weight: bold;
+          color: #333;
+      }
+      #pointer {
+          width: 0;
+          height: 0;
+          border-left: 10px solid transparent;
+          border-right: 15px solid transparent;
+          border-top: 30px solid red;
+          position: absolute;
+          top: 20%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+      }
+      #prizes {
+          margin-top: 20px;
+      }
+      button{
+        width: 50%;
+        margin:5px
+      }
+  </style>
+</head>
+<body>
+  <div id="wheel"></div>
+  <div id="pointer"></div>
+  <input type="text" id="prizeInput" placeholder="输入奖品名称">
+  <button onclick="addPrize()">添加奖品</button>
+  <button onclick="spinWheel()">开始抽奖</button>
+  <div id="prizes"></div>
+  
+  <script>
+      let prizes = [];
+      let angle = 0;
+      let isSpinning = false;
+
+      function renderWheel() {
+          const wheel = document.getElementById('wheel');
+          wheel.innerHTML = '';
+          const sliceAngle = 360 / prizes.length;
+          prizes.forEach((prize, index) => {
+              const slice = document.createElement('div');
+              slice.className = 'slice';
+              slice.style.transform = `rotate(${index * sliceAngle}deg)`;
+              slice.style.backgroundColor = `hsl(${index * sliceAngle}, 70%, 50%)`;
+              slice.innerText = prize;
+              wheel.appendChild(slice);
+          });
+      }
+
+      function addPrize() {
+          const prizeInput = document.getElementById('prizeInput');
+          const prizeName = prizeInput.value.trim();
+          if (prizeName) {
+              prizes.push(prizeName);
+              prizeInput.value = '';
+              renderWheel();
+              savePrizes();
+          }
+      }
+
+      function spinWheel() {
+          if (prizes.length === 0) return;
+          if (isSpinning) return;
+          isSpinning = true;
+          angle += Math.floor(Math.random() * 360 + 720); // Random spin
+          document.getElementById('wheel').style.transform = `rotate(${angle}deg)`;
+          setTimeout(() => {
+              const selectedIndex = Math.floor((angle % 360) / (360 / prizes.length));
+              alert('你抽中的奖品是: ' + prizes[selectedIndex]);
+              isSpinning = false;
+          }, 4000);
+      }
+
+      function savePrizes() {
+          localStorage.setItem('prizes', JSON.stringify(prizes));
+      }
+
+      function loadPrizes() {
+          const savedPrizes = localStorage.getItem('prizes');
+          if (savedPrizes) {
+              prizes = JSON.parse(savedPrizes);
+              renderWheel();
+          }
+      }
+
+      loadPrizes();
+  </script>
+</body>
+</html>
